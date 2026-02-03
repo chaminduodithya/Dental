@@ -32,9 +32,9 @@ try {
         ]
     );
 } catch(PDOException $e) {
-    // Log error and show user-friendly message
-    error_log("Database Connection Error: " . $e->getMessage());
-    die("Database connection failed. Please check your configuration.");
+    // Log error and show detailed message for debugging
+    $error = $e->getMessage();
+    die("Database Connection Failed (PDO): " . $error . "<br><br>Possible reasons:<br>1. MySQL is not running in XAMPP.<br>2. Database '" . DB_NAME . "' does not exist (Did you import database_setup.sql?).<br>3. Credentials are incorrect.");
 }
 
 // ============================================
@@ -43,8 +43,8 @@ try {
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 if (!$conn) {
-    error_log("MySQLi Connection Error: " . mysqli_connect_error());
-    die("Database connection failed. Please check your configuration.");
+    $error = mysqli_connect_error();
+    die("Database Connection Failed (MySQLi): " . $error . "<br><br>Possible reasons:<br>1. MySQL is not running in XAMPP.<br>2. Database '" . DB_NAME . "' does not exist.<br>3. Credentials are incorrect.");
 }
 
 // Set charset
