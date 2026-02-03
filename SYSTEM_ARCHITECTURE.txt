@@ -1,0 +1,385 @@
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                    🦷 DENTAL CARE CRUD SYSTEM ARCHITECTURE                   │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           PUBLIC WEBSITE (Patient)                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                            index.php (CREATE)
+                                   │
+                                   │ 1. Patient submits form
+                                   ▼
+                      ┌────────────────────────────┐
+                      │    Validation Layer        │
+                      │  - Required fields         │
+                      │  - Email format            │
+                      │  - Input sanitization      │
+                      └────────────┬───────────────┘
+                                   │
+                                   │ 2. If valid
+                                   ▼
+                      ┌────────────────────────────┐
+                      │  config/database.php       │
+                      │  - PDO Connection          │
+                      │  - Prepared Statement      │
+                      └────────────┬───────────────┘
+                                   │
+                                   │ 3. INSERT query
+                                   ▼
+                      ┌────────────────────────────┐
+                      │    MySQL Database          │
+                      │   Table: appointments      │
+                      │   Status: 'pending'        │
+                      └────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ADMIN PANEL (Staff) - Authentication                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                           admin/login.php
+                                   │
+                                   │ 1. Admin enters credentials
+                                   ▼
+                      ┌────────────────────────────┐
+                      │   Credential Validation    │
+                      │  - Query admin_users       │
+                      │  - Verify password hash    │
+                      └────────────┬───────────────┘
+                                   │
+                      ┌────────────┴────────────┐
+                      │                         │
+                  Invalid                   Valid
+                      │                         │
+                      ▼                         ▼
+              Error Message        ┌────────────────────────────┐
+              Stay on login        │  Create Session            │
+                                   │  - admin_logged_in = true  │
+                                   │  - Store user info         │
+                                   │  - Set timeout             │
+                                   └────────────┬───────────────┘
+                                                │
+                                                ▼
+                                       Redirect to Dashboard
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ADMIN PANEL - CRUD Operations Flow                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                        ┌─────────────────────┐
+                        │   admin/index.php   │
+                        │   (Entry Point)     │
+                        └──────────┬──────────┘
+                                   │
+                     ┌─────────────┴──────────────┐
+                     │                            │
+              Not Logged In                 Logged In
+                     │                            │
+                     ▼                            ▼
+              admin/login.php          admin/dashboard.php
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                          DASHBOARD (READ)                                 │
+└───────────────────────────────────────────────────────────────────────────┘
+
+                      admin/dashboard.php
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+              ▼                ▼                ▼
+    ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+    │ Count Stats │  │  Upcoming   │  │   Recent    │
+    │  - Total    │  │Appointments │  │Appointments │
+    │  - Pending  │  │  (Next 5)   │  │  (Last 5)   │
+    │  - Confirm  │  └─────────────┘  └─────────────┘
+    │  - Complete │
+    └─────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                    APPOINTMENTS PAGE (READ - Full List)                   │
+└───────────────────────────────────────────────────────────────────────────┘
+
+                   admin/appointments.php
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+        ▼                    ▼                    ▼
+  ┌──────────┐       ┌──────────┐        ┌──────────┐
+  │  Search  │       │  Filter  │        │   Table  │
+  │ By Name, │       │   By     │        │   All    │
+  │ Email or │       │  Status  │        │  Records │
+  │  Phone   │       │          │        │          │
+  └──────────┘       └──────────┘        └─────┬────┘
+                                               │
+                                   ┌───────────┴───────────┐
+                                   │                       │
+                                   ▼                       ▼
+                           ┌──────────────┐       ┌──────────────┐
+                           │ Edit Button  │       │Delete Button │
+                           │  (UPDATE)    │       │   (DELETE)   │
+                           └──────┬───────┘       └──────┬───────┘
+                                  │                      │
+                                  ▼                      ▼
+                           admin/edit.php        admin/delete.php
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                         UPDATE FLOW (Edit)                                │
+└───────────────────────────────────────────────────────────────────────────┘
+
+                        admin/edit.php?id=X
+                                │
+                                │ 1. Load existing data
+                                ▼
+                   ┌────────────────────────────┐
+                   │  SELECT query by ID        │
+                   │  Pre-fill form fields      │
+                   └────────────┬───────────────┘
+                                │
+                                │ 2. Admin modifies
+                                ▼
+                   ┌────────────────────────────┐
+                   │   Validate Changes         │
+                   │  - Required fields         │
+                   │  - Email format            │
+                   └────────────┬───────────────┘
+                                │
+                                │ 3. If valid
+                                ▼
+                   ┌────────────────────────────┐
+                   │    UPDATE query            │
+                   │  - Update all fields       │
+                   │  - Set updated_at          │
+                   └────────────┬───────────────┘
+                                │
+                                │ 4. Success
+                                ▼
+                   ┌────────────────────────────┐
+                   │  Redirect to appointments  │
+                   │  Show success message      │
+                   └────────────────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                         DELETE FLOW                                       │
+└───────────────────────────────────────────────────────────────────────────┘
+
+                    admin/delete.php?id=X
+                              │
+                              │ 1. JavaScript confirmation
+                              ▼
+                  ┌───────────────────────────┐
+                  │  "Are you sure?"          │
+                  └────────┬──────────────────┘
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+           Cancel                    Confirm
+              │                         │
+              ▼                         ▼
+         Go Back           ┌────────────────────────────┐
+                           │  Check if record exists    │
+                           └────────────┬───────────────┘
+                                        │
+                           ┌────────────┴────────────┐
+                           │                         │
+                      Not Found                   Found
+                           │                         │
+                           ▼                         ▼
+                    Error Message      ┌────────────────────────────┐
+                                       │   DELETE query             │
+                                       │   Remove from database     │
+                                       └────────────┬───────────────┘
+                                                    │
+                                                    ▼
+                                       ┌────────────────────────────┐
+                                       │  Redirect to appointments  │
+                                       │  Show success message      │
+                                       └────────────────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                        DATABASE SCHEMA                                    │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────┐
+│         TABLE: appointments           │
+├───────────────────────────────────────┤
+│ id           INT (PK, Auto)           │
+│ name         VARCHAR(100)             │
+│ email        VARCHAR(100)             │
+│ number       VARCHAR(20)              │
+│ date         DATETIME                 │
+│ status       ENUM (4 values) ──────────── pending / confirmed / 
+│ notes        TEXT                     │    cancelled / completed
+│ created_at   TIMESTAMP                │
+│ updated_at   TIMESTAMP                │
+└───────────────────────────────────────┘
+
+┌───────────────────────────────────────┐
+│         TABLE: admin_users            │
+├───────────────────────────────────────┤
+│ id           INT (PK, Auto)           │
+│ username     VARCHAR(50) UNIQUE       │
+│ password     VARCHAR(255) ────────────── bcrypt hashed
+│ email        VARCHAR(100)             │
+│ full_name    VARCHAR(100)             │
+│ created_at   TIMESTAMP                │
+│ last_login   TIMESTAMP                │
+└───────────────────────────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                     SECURITY LAYERS                                       │
+└───────────────────────────────────────────────────────────────────────────┘
+
+        User Input
+             │
+             ▼
+    ┌────────────────────┐
+    │  Input Validation  │ ◄── Required fields, email format
+    └────────┬───────────┘
+             ▼
+    ┌────────────────────┐
+    │  Input Sanitization│ ◄── sanitize_input(), htmlspecialchars()
+    └────────┬───────────┘
+             ▼
+    ┌────────────────────┐
+    │ Prepared Statements│ ◄── PDO with bound parameters
+    └────────┬───────────┘
+             ▼
+    ┌────────────────────┐
+    │   Authentication   │ ◄── Password hash, session checks
+    └────────┬───────────┘
+             ▼
+    ┌────────────────────┐
+    │ Authorization      │ ◄── includes/auth.php on admin pages
+    └────────┬───────────┘
+             ▼
+         Database
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                     SESSION MANAGEMENT                                    │
+└───────────────────────────────────────────────────────────────────────────┘
+
+         Login Success
+              │
+              ▼
+    ┌──────────────────────┐
+    │  Create Session      │
+    │  - admin_logged_in   │
+    │  - admin_id          │
+    │  - admin_username    │
+    │  - last_activity     │
+    └──────────┬───────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │  Every Page Load     │
+    │  - Check session     │
+    │  - Verify timeout    │
+    │  - Update activity   │
+    └──────────┬───────────┘
+               │
+     ┌─────────┴─────────┐
+     │                   │
+  Valid             Timeout/Invalid
+     │                   │
+     ▼                   ▼
+  Continue    ┌──────────────────────┐
+              │  Destroy Session     │
+              │  Redirect to login   │
+              └──────────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                     FILE STRUCTURE                                        │
+└───────────────────────────────────────────────────────────────────────────┘
+
+Dental/
+│
+├── config/
+│   └── database.php ─────────── Centralized DB connection (PDO)
+│
+├── admin/ ──────────────────── Admin Panel
+│   │
+│   ├── includes/
+│   │   ├── auth.php ──────────── Session check middleware
+│   │   ├── header.php ─────────── Common header (sidebar, topbar)
+│   │   └── footer.php ─────────── Common footer
+│   │
+│   ├── css/
+│   │   ├── admin-style.css ────── Admin panel styling
+│   │   └── login.css ──────────── Login page styling
+│   │
+│   ├── js/
+│   │   └── admin.js ──────────── Sidebar toggle, alerts
+│   │
+│   ├── index.php ────────────── Entry redirect
+│   ├── login.php ────────────── Login form + authentication
+│   ├── logout.php ───────────── Session destroy
+│   ├── dashboard.php ────────── Statistics (READ)
+│   ├── appointments.php ─────── List all (READ)
+│   ├── edit.php ─────────────── Edit form (UPDATE)
+│   └── delete.php ───────────── Delete handler (DELETE)
+│
+├── css/
+│   └── style.css ────────────── Public website styles
+│
+├── images/ ──────────────────── Website images
+│
+├── js/
+│   └── script.js ────────────── Public website JavaScript
+│
+├── database_setup.sql ───────── Database creation script
+├── index.php ────────────────── Public website (CREATE)
+├── README.md ────────────────── Full documentation
+├── QUICK_START.txt ──────────── Quick setup guide
+└── IMPLEMENTATION_SUMMARY.md ── This summary
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                     REQUEST FLOW SUMMARY                                  │
+└───────────────────────────────────────────────────────────────────────────┘
+
+PUBLIC REQUEST (Create Appointment):
+  Browser → index.php → Validate → database.php → MySQL → Response
+
+ADMIN REQUEST (Any page):
+  Browser → admin/*.php → auth.php (check session) → Process → Response
+                    ↓
+              If not logged in: Redirect to login.php
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                     KEY TECHNOLOGIES USED                                 │
+└───────────────────────────────────────────────────────────────────────────┘
+
+Backend:
+  • PHP 7.4+ (PDO for database)
+  • MySQL (via XAMPP)
+  • Sessions (for authentication)
+  
+Frontend:
+  • HTML5 (semantic markup)
+  • CSS3 (gradients, animations, flexbox, grid)
+  • JavaScript (ES6+)
+  • Font Awesome 6.7.2 (icons)
+  • Google Fonts (Poppins)
+
+Security:
+  • PDO Prepared Statements
+  • Password Hashing (bcrypt)
+  • Input Sanitization
+  • XSS Protection
+  • Session Management
+
+
+══════════════════════════════════════════════════════════════════════════════
+                       🎉 COMPLETE SYSTEM READY! 🎉
+══════════════════════════════════════════════════════════════════════════════

@@ -292,6 +292,7 @@ section{
   max-width: 50rem;
 }
 
+
 .contact form .message{
   margin-bottom: 2rem;
   border-radius: 10px;
@@ -301,6 +302,15 @@ section{
   color: var(--white);
   text-align: center;
 }
+
+.contact form .message.success{
+  background-color: var(--blue);
+}
+
+.contact form .message.error{
+  background-color: #ef4444;
+}
+
 
 .contact form .box{
   padding: 1.2rem 1.4rem;

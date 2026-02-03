@@ -1,20 +1,45 @@
 <?php
+// Include database configuration
+require_once 'config/database.php';
 
-// Database connection
-    $conn = mysqli_connect('sql302.infinityfree.com','if0_39094183','BPjOGREGbzaG','if0_39094183_contact_db') or die('Connection failed');
-
-
-    if(isset($_POST['submit'])){
-        $name = mysqli_real_escape_string($conn, $_POST['name']);
-        $email = mysqli_real_escape_string($conn, $_POST['email']);
-        $number = mysqli_real_escape_string($conn, $_POST['number']);
-        $date = mysqli_real_escape_string($conn, $_POST['date']);
-
-        // Insert data into database
-        $insert_query = "INSERT INTO `contact_form`(`name`, `email`, `number`, `date`) VALUES ('$name','$email','$number','$date')";
-        mysqli_query($conn, $insert_query) or die('Query failed');
-        $message = 'Appointment made successfully!';
+if(isset($_POST['submit'])){
+    $name = sanitize_input($_POST['name']);
+    $email = sanitize_input($_POST['email']);
+    $number = sanitize_input($_POST['number']);
+    $date = sanitize_input($_POST['date']);
+    
+    // Validation
+    if(empty($name) || empty($email) || empty($number) || empty($date)){
+        $message = 'Please fill in all fields!';
+        $message_type = 'error';
+    } elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        $message = 'Please enter a valid email address!';
+        $message_type = 'error';
+    } else {
+        try {
+            // Use prepared statement to prevent SQL injection
+            $stmt = $pdo->prepare("INSERT INTO appointments (name, email, number, date, status) VALUES (:name, :email, :number, :date, 'pending')");
+            $result = $stmt->execute([
+                'name' => $name,
+                'email' => $email,
+                'number' => $number,
+                'date' => $date
+            ]);
+            
+            if($result){
+                $message = 'Appointment request submitted successfully! We will contact you soon.';
+                $message_type = 'success';
+            } else {
+                $message = 'Failed to book appointment. Please try again.';
+                $message_type = 'error';
+            }
+        } catch(PDOException $e) {
+            error_log("Appointment Error: " . $e->getMessage());
+            $message = 'An error occurred. Please try again later.';
+            $message_type = 'error';
+        }
     }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -208,7 +233,8 @@
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
             <?php
                 if(isset($message)){
-                    echo '<p class="message">'.$message.'</p>';
+                    $class = isset($message_type) && $message_type === 'error' ? 'message error' : 'message success';
+                    echo '<p class="'.$class.'">'.$message.'</p>';
                 }
             ?>
             <span>Your name :</span>
