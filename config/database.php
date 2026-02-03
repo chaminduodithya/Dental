@@ -12,17 +12,18 @@ if (!defined('DB_CONFIG_LOADED')) {
 // ============================================
 // XAMPP Local Configuration
 // ============================================
-define('DB_HOST', 'localhost');
+define('DB_HOST', '127.0.0.1');
 define('DB_USER', 'root');
-define('DB_PASS', ''); // Empty password for XAMPP default
+define('DB_PASS', '20883'); // Empty password for XAMPP default
 define('DB_NAME', 'dental_db');
 
 // ============================================
 // Create Database Connection using PDO
 // ============================================
 try {
+    // Adding port=3306 and using 127.0.0.1 forces TCP/IP instead of socket
     $pdo = new PDO(
-        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
+        "mysql:host=" . DB_HOST . ";port=3306;dbname=" . DB_NAME . ";charset=utf8mb4",
         DB_USER,
         DB_PASS,
         [
@@ -34,7 +35,22 @@ try {
 } catch(PDOException $e) {
     // Log error and show detailed message for debugging
     $error = $e->getMessage();
-    die("Database Connection Failed (PDO): " . $error . "<br><br>Possible reasons:<br>1. MySQL is not running in XAMPP.<br>2. Database '" . DB_NAME . "' does not exist (Did you import database_setup.sql?).<br>3. Credentials are incorrect.");
+    $host = DB_HOST;
+    $db = DB_NAME;
+    $user = DB_USER;
+    die("<div style='color:red; font-family:sans-serif; padding:20px; border:1px solid red; background:#fff5f5;'>
+        <h2>Database Connection Failed (PDO)</h2>
+        <p><strong>Error:</strong> $error</p>
+        <hr>
+        <p><strong>Connection Details:</strong><br>
+        Host: $host<br>
+        Database: $db<br>
+        User: $user</p>
+        <p><strong>Troubleshooting:</strong><br>
+        1. Ensure MySQL is STARTED in XAMPP.<br>
+        2. Verify database '$db' exists in <a href='http://localhost/phpmyadmin' target='_blank'>phpMyAdmin</a>.<br>
+        3. Double check the password in <code>config/database.php</code>.</p>
+    </div>");
 }
 
 // ============================================
