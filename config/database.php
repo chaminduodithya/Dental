@@ -14,7 +14,7 @@ if (!defined('DB_CONFIG_LOADED')) {
 // ============================================
 define('DB_HOST', '127.0.0.1');
 define('DB_USER', 'root');
-define('DB_PASS', '20883'); // Empty password for XAMPP default
+define('DB_PASS', ''); // Empty password for XAMPP default
 define('DB_NAME', 'dental_db');
 
 // ============================================
