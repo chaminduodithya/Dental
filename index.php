@@ -109,14 +109,14 @@ if (isset($_POST['submit'])) {
     </section>
 
     <!-- about -->
-    <section class="about" id="about">
+    <section class="about reveal" id="about">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6 image">
-                    <img src="images/about-img.jpg" alt="about image" class="w-100 mb-5 mb-md-0">
+                    <img src="images/about-img.jpg" alt="about image" class="w-100 mb-5 mb-md-0" style="border-radius: 2rem; box-shadow: var(--box-shadow);">
                 </div>
 
-                <div class="col-md-6 content">
+                <div class="col-md-4 content">
                     <span>About us</span>
                     <h3>True Healthcare for Your Family</h3>
                     <p>We are a trusted healthcare provider committed to delivering compassionate and comprehensive medical care for your entire family. With a team of experienced professionals and a patient-centered approach, we strive to create a welcoming environment where your health and well-being are our top priorities.</p>
@@ -131,7 +131,7 @@ if (isset($_POST['submit'])) {
     </section>
 
     <!-- services -->
-    <section class="services" id="services">
+    <section class="services reveal" id="services">
         <h1 class="heading">Our services</h1>
 
         <div class="box-container container">
@@ -176,33 +176,33 @@ if (isset($_POST['submit'])) {
 
 
     <!-- process -->
-    <section class="process">
+    <section class="process reveal">
         <h1 class="heading">Work process</h1>
 
         <div class="box-container container">
             <div class="box">
                 <img src="images/process-1.jpg" alt="">
                 <h3>Cosmetic Dentistry</h3>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, explicabo?</p>
+                <p>We use whitening, veneers, and bonding techniques to give you a brighter, more confident smile you'll love showing off.</p>
             </div>
 
             <div class="box">
                 <img src="images/process-2.jpg" alt="">
                 <h3>Pediatric Dentistry</h3>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, explicabo?</p>
+                <p>Gentle and friendly dental care designed specifically for children, making every visit stress-free and fun.</p>
             </div>
 
             <div class="box">
                 <img src="images/process-3.jpg" alt="">
                 <h3>Dental Implants</h3>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, explicabo?</p>
+                <p>Permanent, natural-looking tooth replacements that restore your ability to eat, speak, and smile with confidence.</p>
             </div>
         </div>
     </section>
 
 
     <!-- reviews -->
-    <section class="reviews" id="reviews">
+    <section class="reviews reveal" id="reviews">
         <h1 class="heading">Satisfied clients</h1>
 
         <div class="box-container container">
@@ -252,7 +252,7 @@ if (isset($_POST['submit'])) {
 
 
     <!-- contact -->
-    <section class="contact" id="contact">
+    <section class="contact reveal" id="contact">
         <?php if (isset($_SESSION['user_id'])): ?>
             <h1 class="heading">make appointment</h1>
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">

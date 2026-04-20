@@ -25,9 +25,9 @@ if (isset($_GET['logout']) && $_GET['logout'] == 'success') {
 
 // Handle login form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
-    $username = sanitize_input($_POST['username']);
-    $password = $_POST['password'];
-    
+    $username = trim($_POST['username']);  // trim only – prepared statement handles SQL injection
+    $password = $_POST['password'];        // never modify before password_verify()
+
     if (empty($username) || empty($password)) {
         $error_message = 'Please enter both username and password.';
     } else {
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
             $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = :username LIMIT 1");
             $stmt->execute(['username' => $username]);
             $admin = $stmt->fetch();
-            
+
             if ($admin && password_verify($password, $admin['password'])) {
                 // Login successful
                 $_SESSION['admin_logged_in'] = true;
@@ -44,18 +44,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
                 $_SESSION['admin_username'] = $admin['username'];
                 $_SESSION['admin_email'] = $admin['email'];
                 $_SESSION['last_activity'] = time();
-                
+
                 // Update last login time
                 $update_stmt = $pdo->prepare("UPDATE admin_users SET last_login = NOW() WHERE id = :id");
                 $update_stmt->execute(['id' => $admin['id']]);
-                
+
                 // Redirect to dashboard
                 header('Location: dashboard.php');
                 exit();
             } else {
                 $error_message = 'Invalid username or password.';
             }
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             error_log("Login Error: " . $e->getMessage());
             $error_message = 'An error occurred. Please try again.';
         }
@@ -64,20 +64,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - DentalCare</title>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Login CSS -->
     <link rel="stylesheet" href="css/login.css">
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-box">
@@ -88,66 +90,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
                 <h1>dental<span>Care</span></h1>
                 <p>Admin Panel Login</p>
             </div>
-            
+
             <?php if ($error_message): ?>
                 <div class="alert alert-error">
                     <i class="fas fa-exclamation-circle"></i>
                     <?php echo htmlspecialchars($error_message); ?>
                 </div>
             <?php endif; ?>
-            
+
             <?php if ($success_message): ?>
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
                     <?php echo htmlspecialchars($success_message); ?>
                 </div>
             <?php endif; ?>
-            
+
             <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" class="login-form">
                 <div class="form-group">
                     <label for="username">
                         <i class="fas fa-user"></i>
                         Username
                     </label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        placeholder="Enter your username" 
-                        required 
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        required
                         autofocus
-                        value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>"
-                    >
+                        autocomplete="username"
+                        value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="password">
                         <i class="fas fa-lock"></i>
                         Password
                     </label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        placeholder="Enter your password" 
-                        required
-                    >
+                    <div style="position:relative;">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                            style="padding-right:45px;">
+                        <button type="button" id="toggle-password" onclick="togglePassword()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#666;"><i class="fas fa-eye" id="toggle-icon"></i></button>
+                    </div>
                 </div>
-                
+
                 <button type="submit" name="login" class="login-btn">
                     <i class="fas fa-sign-in-alt"></i>
                     Login
                 </button>
             </form>
-            
+
             <div class="login-footer">
-                <p><i class="fas fa-info-circle"></i> Default: admin / admin123</p>
                 <a href="../index.php" class="back-link">
                     <i class="fas fa-arrow-left"></i> Back to Website
                 </a>
             </div>
         </div>
-        
+
         <div class="background-animation">
             <div class="tooth-icon tooth-1"><i class="fas fa-tooth"></i></div>
             <div class="tooth-icon tooth-2"><i class="fas fa-tooth"></i></div>
@@ -155,4 +160,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
         </div>
     </div>
 </body>
+
 </html>
+<script>
+    function togglePassword() {
+        const input = document.getElementById('password');
+        const icon = document.getElementById('toggle-icon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+</script>

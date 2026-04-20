@@ -138,10 +138,12 @@ if (isset($_POST['login'])) {
                     <p class="message error"><?php echo $error; ?></p>
                 <?php endif; ?>
 
-                <input type="email" name="email" placeholder="Enter your email" class="box" required value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
-                <input type="password" name="password" placeholder="Enter your password" class="box" required>
+                <label for="email" style="font-size:1.5rem;color:#555;display:block;margin-bottom:.3rem;">Email address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" class="box" required autocomplete="email" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
+                <label for="password" style="font-size:1.5rem;color:#555;display:block;margin:.7rem 0 .3rem;">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" class="box" required autocomplete="current-password">
 
-                <input type="submit" value="login" name="login" class="link-btn">
+                <button type="submit" name="login" class="link-btn" style="display:block;width:100%;text-align:center;cursor:pointer;border:none;">Login</button>
                 <p>Don't have an account? <a href="register.php">Register here</a></p>
                 <p><a href="index.php">Back to Home</a></p>
             </form>

@@ -161,13 +161,18 @@ if (isset($_POST['register'])) {
                     <p class="message success"><?php echo $success; ?></p>
                 <?php endif; ?>
 
-                <input type="text" name="name" placeholder="Enter your full name" class="box" required value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
-                <input type="email" name="email" placeholder="Enter your email" class="box" required value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
-                <input type="number" name="number" placeholder="Enter your phone number" class="box" required value="<?php echo isset($_POST['number']) ? htmlspecialchars($_POST['number']) : ''; ?>">
-                <input type="password" name="password" placeholder="Create password" class="box" required>
-                <input type="password" name="confirm_password" placeholder="Confirm password" class="box" required>
+                <label for="reg-name" style="font-size:1.5rem;color:#555;display:block;margin-bottom:.3rem;">Full Name</label>
+                <input type="text" id="reg-name" name="name" placeholder="Enter your full name" class="box" required autocomplete="name" value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
+                <label for="reg-email" style="font-size:1.5rem;color:#555;display:block;margin:.7rem 0 .3rem;">Email Address</label>
+                <input type="email" id="reg-email" name="email" placeholder="Enter your email" class="box" required autocomplete="email" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
+                <label for="reg-number" style="font-size:1.5rem;color:#555;display:block;margin:.7rem 0 .3rem;">Phone Number</label>
+                <input type="number" id="reg-number" name="number" placeholder="Enter your phone number" class="box" required autocomplete="tel" value="<?php echo isset($_POST['number']) ? htmlspecialchars($_POST['number']) : ''; ?>">
+                <label for="reg-password" style="font-size:1.5rem;color:#555;display:block;margin:.7rem 0 .3rem;">Password</label>
+                <input type="password" id="reg-password" name="password" placeholder="Create password" class="box" required autocomplete="new-password">
+                <label for="reg-confirm" style="font-size:1.5rem;color:#555;display:block;margin:.7rem 0 .3rem;">Confirm Password</label>
+                <input type="password" id="reg-confirm" name="confirm_password" placeholder="Confirm password" class="box" required autocomplete="new-password">
 
-                <input type="submit" value="register now" name="register" class="link-btn">
+                <button type="submit" name="register" class="link-btn" style="display:block;width:100%;text-align:center;cursor:pointer;border:none;">Register Now</button>
                 <p>Already have an account? <a href="login.php">Login here</a></p>
                 <p><a href="index.php">Back to Home</a></p>
             </form>

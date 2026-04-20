@@ -10,28 +10,27 @@ try {
     // Total appointments
     $total_stmt = $pdo->query("SELECT COUNT(*) as total FROM appointments");
     $total_appointments = $total_stmt->fetch()['total'];
-    
+
     // Pending appointments
     $pending_stmt = $pdo->query("SELECT COUNT(*) as total FROM appointments WHERE status = 'pending'");
     $pending_appointments = $pending_stmt->fetch()['total'];
-    
+
     // Confirmed appointments
     $confirmed_stmt = $pdo->query("SELECT COUNT(*) as total FROM appointments WHERE status = 'confirmed'");
     $confirmed_appointments = $confirmed_stmt->fetch()['total'];
-    
+
     // Completed appointments
     $completed_stmt = $pdo->query("SELECT COUNT(*) as total FROM appointments WHERE status = 'completed'");
     $completed_appointments = $completed_stmt->fetch()['total'];
-    
+
     // Recent appointments (last 5)
     $recent_stmt = $pdo->query("SELECT * FROM appointments ORDER BY created_at DESC LIMIT 5");
     $recent_appointments = $recent_stmt->fetchAll();
-    
+
     // Upcoming appointments (next 5)
     $upcoming_stmt = $pdo->query("SELECT * FROM appointments WHERE date >= NOW() ORDER BY date ASC LIMIT 5");
     $upcoming_appointments = $upcoming_stmt->fetchAll();
-    
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     error_log("Dashboard Error: " . $e->getMessage());
     $error_message = 'Failed to load dashboard data.';
 }
@@ -50,7 +49,7 @@ include 'includes/header.php';
             <p>Total Appointments</p>
         </div>
     </div>
-    
+
     <div class="stat-card stat-warning">
         <div class="stat-icon">
             <i class="fas fa-clock"></i>
@@ -60,7 +59,7 @@ include 'includes/header.php';
             <p>Pending</p>
         </div>
     </div>
-    
+
     <div class="stat-card stat-success">
         <div class="stat-icon">
             <i class="fas fa-check-circle"></i>
@@ -70,7 +69,7 @@ include 'includes/header.php';
             <p>Confirmed</p>
         </div>
     </div>
-    
+
     <div class="stat-card stat-info">
         <div class="stat-icon">
             <i class="fas fa-flag-checkered"></i>
@@ -88,7 +87,7 @@ include 'includes/header.php';
         <i class="fas fa-list"></i>
         View All Appointments
     </a>
-    <a href="../index.php#contact" target="_blank" class="action-btn">
+    <a href="add_appointment.php" class="action-btn">
         <i class="fas fa-plus"></i>
         New Appointment
     </a>
@@ -104,7 +103,7 @@ include 'includes/header.php';
         <div class="card-body">
             <?php if (count($upcoming_appointments) > 0): ?>
                 <div class="appointments-list">
-                    <?php foreach($upcoming_appointments as $appointment): ?>
+                    <?php foreach ($upcoming_appointments as $appointment): ?>
                         <div class="appointment-item">
                             <div class="appointment-info">
                                 <h4><?php echo htmlspecialchars($appointment['name']); ?></h4>
@@ -133,7 +132,7 @@ include 'includes/header.php';
             <?php endif; ?>
         </div>
     </div>
-    
+
     <!-- Recent Appointments -->
     <div class="dashboard-card">
         <div class="card-header">
@@ -142,7 +141,7 @@ include 'includes/header.php';
         <div class="card-body">
             <?php if (count($recent_appointments) > 0): ?>
                 <div class="appointments-list">
-                    <?php foreach($recent_appointments as $appointment): ?>
+                    <?php foreach ($recent_appointments as $appointment): ?>
                         <div class="appointment-item">
                             <div class="appointment-info">
                                 <h4><?php echo htmlspecialchars($appointment['name']); ?></h4>

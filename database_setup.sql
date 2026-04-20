@@ -68,8 +68,8 @@ CREATE TABLE IF NOT EXISTS `admin_users` (
 -- Username: admin
 -- Password: admin123 (CHANGE THIS AFTER FIRST LOGIN!)
 -- ============================================
-INSERT INTO `admin_users` (`username`, `password`, `email`, `full_name`) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@dentalcare.com', 'Admin User');
+INSERT IGNORE INTO `admin_users` (`username`, `password`, `email`, `full_name`) VALUES
+('admin', '$2y$10$WMeC/E5t96bGERKJicJQWOI.eK01SorhGHKb1592UdQZMwFJgh7wK', 'admin@dentalcare.com', 'Admin User');
 -- Note: Password is hashed using PHP password_hash()
 
 -- ============================================
