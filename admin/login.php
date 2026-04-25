@@ -138,6 +138,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
                             style="padding-right:45px;">
                         <button type="button" id="toggle-password" onclick="togglePassword()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#666;"><i class="fas fa-eye" id="toggle-icon"></i></button>
                     </div>
+                    <div style="text-align: right; margin-top: 10px;">
+                        <a href="forgot_password.php" style="color: #2c6e49; font-size: 0.9em; text-decoration: none; font-weight: 500;">Forgot Password?</a>
+                    </div>
                 </div>
 
                 <button type="submit" name="login" class="login-btn">

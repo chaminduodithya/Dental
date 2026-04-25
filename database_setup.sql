@@ -57,6 +57,8 @@ CREATE TABLE IF NOT EXISTS `admin_users` (
   `password` varchar(255) NOT NULL,
   `email` varchar(100) NOT NULL,
   `full_name` varchar(100) NOT NULL,
+  `reset_token` varchar(64) DEFAULT NULL,
+  `reset_token_expires` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_login` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
